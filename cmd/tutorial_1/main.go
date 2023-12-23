@@ -1,44 +1,37 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func main() {
-	var intNum int = 32767
-	intNum = intNum + 1
-	fmt.Println(intNum)
+	var printValue string = "Hello World!"
+	printMe(printValue)
 
-	var floatNum float64 = 12345678.9
-	fmt.Println(floatNum)
+	var numerator int = 11
+	var denominator int = 2
+	var result, remainder, err = intDivision(numerator, denominator)
+	if err != nil {
+		fmt.Printf(err.Error())
+	} else if remainder == 0 {
+		fmt.Printf("The result of the integer division is %v\n", result)
+	} else {
+		fmt.Printf("The result of the integer division is %v with remainder %v\n", result, remainder)
+	}
+}
 
-	var floatNum32 float32 = 10.1
-	var intNum32 int32 = 2
-	var result float32 = floatNum32 + float32(intNum32)
-	fmt.Println(result)
+func printMe(printValue string) {
+	fmt.Println(printValue)
+}
 
-	var intNum1 int = 3
-	var intNum2 int = 2
-	fmt.Println(intNum1/intNum2)
-
-	var myString string = "Hello World"
-	fmt.Println(myString)
-
-	var myRune = 'a'
-	fmt.Println(myRune)
-
-	var myBoolean bool = false
-	fmt.Println(myBoolean)
-
-	var intNum3 rune
-	fmt.Println(intNum3)
-
-	myVar  := "string value"
-	fmt.Println(myVar)
-
-	var1, var2 := 1, 2
-	fmt.Println(var1, var2)
-
-	const myConst string = "const value"
-	fmt.Println(myConst)
-
-	const pi float32 = 3.1415
+func intDivision(numerator int, denominator int) (int, int, error) {
+	var err error
+	if denominator == 0 {
+		err = errors.New("Cannot Divide by Zero")
+		return 0, 0, err
+	}
+	var result int = numerator/denominator
+	var remainder int = numerator%denominator
+	return result, remainder, err
 }
