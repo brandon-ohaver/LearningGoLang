@@ -2,37 +2,18 @@ package main
 
 import "fmt"
 
-type gasEngine struct {
-	mpg     uint8
-	gallons uint8
-}
-
-type electricEngine struct {
-	mpkwh uint8
-	kwh uint8
-}
-
-func (e gasEngine) milesLeft() uint8 {
-	return e.gallons*e.mpg
-}
-
-func (e electricEngine) milesLeft() uint8 {
-	return e.kwh*e.mpkwh
-}
-
-type engine interface {
-	milesLeft() uint8
-}
-
-func canMakeIt(e engine, miles uint8) {
-	if miles <= e.milesLeft() {
-		fmt.Println("You can make it there!")
-	} else {
-		fmt.Println("Need to fuel up first!")
-	}
-}
-
 func main() {
-	var myEngine gasEngine = gasEngine{mpg: 25, gallons: 15}
-	canMakeIt(myEngine, 50)
+	var thing1 = [5]float64{1, 2, 3, 4, 5}
+	fmt.Printf("\nThe memory location of the thing1 array is: %p", &thing1)
+	var result [5]float64 = square(&thing1)
+	fmt.Printf("\nThe result is: %v", result)
+	fmt.Printf("\nThe value of thing1 is: %v", thing1)
+}
+
+func square(thing2 *[5]float64) [5]float64 {
+	fmt.Printf("\nThe memory location of the thing2 array is: %p", thing2)
+	for i := range thing2 {
+		thing2[i] = thing2[i] * thing2[i]
+	}
+	return *thing2
 }
