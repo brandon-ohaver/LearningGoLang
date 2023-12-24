@@ -2,43 +2,51 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"math/rand"
 	"time"
-) 
+)
 
-var m = sync.RWMutex{}
-var wg = sync.WaitGroup{}
-var dbData = []string {"id1", "id2", "id3", "id4", "id5"}
-var results = []string {}
+var MAX_CHICKEN_PRICE float32 = 5
+var MAX_TOFU_PRICE float32 = 3
 
 func main() {
-	t0 := time.Now()
-	for i := 0; i < len(dbData); i++ {
-		wg.Add(1)
-		go dbCall(i)
+	var chickenChannel = make(chan string)
+	var tofuChannel = make(chan string)
+	var websites = []string{"walmart.com", "costco.com", "wholefoods.com"}
+	for i := range websites {
+		go checkChickenPrices(websites[i], chickenChannel)
+		go checkTofuPrices(websites[i], tofuChannel)
 	}
-	wg.Wait()
-	fmt.Printf("\nTotal execution time: %v", time.Since(t0))
-	fmt.Printf("\nThe results are %v", results)
+	sendMessage(chickenChannel, tofuChannel)
 }
 
-func dbCall (i int) {
-	// simulate DB call delay
-	var delay float32 = 2000
-	time.Sleep(time.Duration(delay)*time.Millisecond)
-	save(dbData[i])
-	log()
-	wg.Done()
+func checkTofuPrices(website string, c chan string) {
+	for {
+		time.Sleep(time.Second*1)
+		var tofu_price = rand.Float32()*20
+		if tofu_price<MAX_TOFU_PRICE {
+			c <- website
+			break
+		}
+	}
 }
 
-func save (result string) {
-	m.Lock()
-	results = append(results, result)
-	m.Unlock()
+func checkChickenPrices(website string, chickenChannel chan string) {
+	for {
+		time.Sleep(time.Second*1)
+		var chickenPrice = rand.Float32()*20
+		if chickenPrice<=MAX_CHICKEN_PRICE {
+			chickenChannel <- website
+			break
+		}
+	}
 }
 
-func log() {
-	m.RLock()
-	fmt.Printf("\nThe current results are: %v", results)
-	m.RUnlock()
+func sendMessage(chickenChannel chan string, tofuChannel chan string) {
+	select {
+		case website := <-chickenChannel:
+			fmt.Printf("\nText Sent: Found deal on chicken at %v", website)
+		case website := <-tofuChannel:
+			fmt.Printf("\nEmail Sent: Found deal on tofu at %v", website)
+	}
 }
